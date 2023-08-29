@@ -3,6 +3,31 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+const SuccessNotification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="success">
+      {message}
+    </div>
+  )
+}
+
+
+const ErrorNotification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [newTitle, setNewTitle] = useState('')
@@ -11,12 +36,16 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    async function fetchData() {
+      const blogs = await blogService.getAll()
       setBlogs( blogs )
-    )  
-  }, [])
+    }
+    fetchData()
+    },[])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -41,10 +70,15 @@ const App = () => {
       console.log(user)
       blogService.setToken(user.token)
       setUser(user)
+      setSuccessMessage(`Successful login for ${user.name}`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('wrong credentials')
+      console.log(exception)
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -69,7 +103,7 @@ const App = () => {
     setNewUrl(event.target.value)
   }
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     console.log('adding a blog....')
     const blogObject = {
@@ -77,15 +111,22 @@ const App = () => {
       author: newAuthor,
       url: newUrl,
     }
-  
-    blogService
-      .create(blogObject)
-        .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
-      })  
+    try {
+      const returnedBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(returnedBlog))
+      setSuccessMessage(`a new blog ${newTitle} by ${newAuthor} added`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+      setNewTitle('')
+      setNewAuthor('')
+      setNewUrl('')
+    } catch (exception) {
+      setErrorMessage(exception.message)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }  
   }
 
 
@@ -115,36 +156,6 @@ const App = () => {
       </form>
     </div>
   )
-
-  /* if (user === null) {
-  
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <form onSubmit={handleLogin}>
-        <div>
-          username
-            <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-            <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-      </div>
-    )
-  } */
 
   const blogForm = () => (
     <form onSubmit={addBlog}>
@@ -177,6 +188,8 @@ const App = () => {
     <div>
 
       <h2>blogs</h2>
+      <SuccessNotification message={successMessage}/>
+      <ErrorNotification message={errorMessage}/>
 
       {!user && loginForm()}
       {user && 

@@ -95,12 +95,12 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     try {
       const returnedBlog = await blogService.create(blogObject)
+      returnedBlog.user = user
       setBlogs(blogs.concat(returnedBlog))
       setSuccessMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
         setTimeout(() => {
           setSuccessMessage(null)
         }, 5000)
-
     } catch (exception) {
       setErrorMessage(exception.message)
       setTimeout(() => {

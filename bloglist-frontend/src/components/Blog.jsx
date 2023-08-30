@@ -1,6 +1,6 @@
-import { useState, useImperativeHandle, forwardRef } from 'react'
+import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -19,6 +19,20 @@ const Blog = ({ blog }) => {
     setExpanded(!expanded)
   }
 
+  
+
+  const handleLikeClick = (event) => {
+    event.preventDefault()
+    console.log(event.target.value)
+    likeBlog(event.target.value,{
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+      user: blog.user
+    })
+  }
+
   return (
     <div style={blogStyle}>
       <div style={hideWhenExpanded}>
@@ -28,7 +42,7 @@ const Blog = ({ blog }) => {
       <div style={showWhenExpanded}>
         <div>{blog.title} {blog.author} <button onClick={toggleExpanded}>hide</button></div>
         <div><a href={blog.url}>{blog.url}</a></div>
-        <div>likes {blog.likes}<button>like</button></div>
+        <div>likes {blog.likes}<button value={blog.id} onClick={handleLikeClick}>like</button></div>
         <div>{blog.user.name}</div>
       </div>
     </div> 

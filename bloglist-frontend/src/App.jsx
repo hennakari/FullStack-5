@@ -109,6 +109,26 @@ const App = () => {
     }  
   }
 
+  const updateBlog = async (id, updatedBlog) => {
+    console.log('updating....')
+    try {
+      const returnedBlog = await blogService.update(id, updatedBlog)
+      const blogToBeUpdated = blogs.find(blog => blog.id.toString() === id)
+      const blogAdder = blogToBeUpdated.user
+      returnedBlog.user = blogAdder
+      setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      setSuccessMessage(`blog ${updatedBlog.title} was liked`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+    } catch (exception) {
+      setErrorMessage(exception.message)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }  
+  }
+
 
   const loginForm = () => (
     
@@ -166,7 +186,7 @@ const App = () => {
           </p>
           {blogForm()}
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} likeBlog={updateBlog} />
           )}
         </div>
       } 

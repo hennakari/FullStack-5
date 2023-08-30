@@ -32,7 +32,7 @@ const ErrorNotification = ({ message }) => {
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
@@ -46,7 +46,7 @@ const App = () => {
     }
     fetchData()
   }, [])
-  
+
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -73,9 +73,9 @@ const App = () => {
       blogService.setToken(user.token)
       setUser(user)
       setSuccessMessage(`Successful login for ${user.name}`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -90,7 +90,7 @@ const App = () => {
   const handleLogout = (event) => {
     console.log('logging out....')
     window.localStorage.removeItem('loggedBlogAppUser')
-    window.location.reload()  
+    window.location.reload()
   }
 
   const addBlog = async (blogObject) => {
@@ -100,18 +100,18 @@ const App = () => {
       const returnedBlog = await blogService.create(blogObject)
       returnedBlog.user = user
       const updatedBlogList = blogs.concat(returnedBlog)
-      updatedBlogList.sort((a, b) => b.likes - a.likes) 
+      updatedBlogList.sort((a, b) => b.likes - a.likes)
       setBlogs(updatedBlogList)
       setSuccessMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     } catch (exception) {
       setErrorMessage(exception.message)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
-    }  
+    }
   }
 
   const updateBlog = async (id, updatedBlog) => {
@@ -125,15 +125,15 @@ const App = () => {
       updatedBlogList.sort((a, b) => b.likes - a.likes)
       setBlogs(updatedBlogList)
       setSuccessMessage(`blog ${updatedBlog.title} was liked`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     } catch (exception) {
       setErrorMessage(exception.message)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
-    }  
+    }
   }
 
   const deleteBlog = async (id) => {
@@ -143,9 +143,9 @@ const App = () => {
       try {
         await blogService.deleteBlog(id)
         setSuccessMessage(`blog ${selected.title} was removed`)
-          setTimeout(() => {
-            setSuccessMessage(null)
-          }, 5000)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
       } catch (exception) {
         setErrorMessage(exception.message)
         setTimeout(() => {
@@ -155,12 +155,12 @@ const App = () => {
       const isSelected = (selected) => selected.id.toString() !== id
       const updatedBlogLIst = blogs.filter(isSelected)
       setBlogs(updatedBlogLIst)
-    } 
+    }
   }
 
 
   const loginForm = () => (
-    
+
     <div>
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
@@ -197,7 +197,7 @@ const App = () => {
           createBlog={addBlog}
         />
       </Togglable>
-    )  
+    )
   }
 
   return (
@@ -208,9 +208,9 @@ const App = () => {
       <ErrorNotification message={errorMessage}/>
 
       {!user && loginForm()}
-      {user && 
+      {user &&
         <div>
-          <p>{user.name} logged in 
+          <p>{user.name} logged in
             <button onClick={handleLogout}>logout</button>
           </p>
           {blogForm()}
@@ -218,7 +218,7 @@ const App = () => {
             <Blog key={blog.id} blog={blog} user={user} likeBlog={updateBlog} removeBlog={deleteBlog} />
           )}
         </div>
-      } 
+      }
     </div>
   )
 }

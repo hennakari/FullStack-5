@@ -41,6 +41,7 @@ const App = () => {
   useEffect(() => {
     async function fetchData() {
       const blogs = await blogService.getAll()
+      blogs.sort((a, b) => b.likes - a.likes)
       setBlogs( blogs )
     }
     fetchData()
@@ -96,7 +97,9 @@ const App = () => {
     try {
       const returnedBlog = await blogService.create(blogObject)
       returnedBlog.user = user
-      setBlogs(blogs.concat(returnedBlog))
+      const updatedBlogList = blogs.concat(returnedBlog)
+      updatedBlogList.sort((a, b) => b.likes - a.likes) 
+      setBlogs(updatedBlogList)
       setSuccessMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
         setTimeout(() => {
           setSuccessMessage(null)
@@ -116,7 +119,9 @@ const App = () => {
       const blogToBeUpdated = blogs.find(blog => blog.id.toString() === id)
       const blogAdder = blogToBeUpdated.user
       returnedBlog.user = blogAdder
-      setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      const updatedBlogList = blogs.map(blog => blog.id !== id ? blog : returnedBlog)
+      updatedBlogList.sort((a, b) => b.likes - a.likes)
+      setBlogs(updatedBlogList)
       setSuccessMessage(`blog ${updatedBlog.title} was liked`)
         setTimeout(() => {
           setSuccessMessage(null)

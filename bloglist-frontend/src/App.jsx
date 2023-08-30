@@ -45,7 +45,8 @@ const App = () => {
       setBlogs( blogs )
     }
     fetchData()
-    },[])
+  }, [])
+  
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -55,6 +56,7 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -134,6 +136,28 @@ const App = () => {
     }  
   }
 
+  const deleteBlog = async (id) => {
+    console.log('deleting....')
+    const selected = blogs.find(blog => blog.id.toString() === id)
+    if (window.confirm(`Remove blog ${selected.title} ?`)) {
+      try {
+        await blogService.deleteBlog(id)
+        setSuccessMessage(`blog ${selected.title} was removed`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
+      } catch (exception) {
+        setErrorMessage(exception.message)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+      const isSelected = (selected) => selected.id.toString() !== id
+      const updatedBlogLIst = blogs.filter(isSelected)
+      setBlogs(updatedBlogLIst)
+    } 
+  }
+
 
   const loginForm = () => (
     
@@ -191,7 +215,7 @@ const App = () => {
           </p>
           {blogForm()}
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} likeBlog={updateBlog} />
+            <Blog key={blog.id} blog={blog} user={user} likeBlog={updateBlog} removeBlog={deleteBlog} />
           )}
         </div>
       } 

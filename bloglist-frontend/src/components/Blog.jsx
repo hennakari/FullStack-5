@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
+//import PropTypes from 'prop-types'
 
 const Blog = ({ blog, user, likeBlog, removeBlog }) => {
 
@@ -30,7 +30,6 @@ const Blog = ({ blog, user, likeBlog, removeBlog }) => {
 
   const handleLikeClick = (event) => {
     event.preventDefault()
-    console.log(event.target.value)
     likeBlog(event.target.value,{
       title: blog.title,
       author: blog.author,
@@ -48,11 +47,10 @@ const Blog = ({ blog, user, likeBlog, removeBlog }) => {
 
   return (
     <div style={blogStyle}>
-      <div style={hideWhenExpanded}>
-        {blog.title}
-        <button onClick={toggleExpanded}>view</button>
+      <div style={hideWhenExpanded} className="visibleContent">
+        {blog.title} {blog.author} <button onClick={toggleExpanded}>view</button>
       </div>
-      <div style={showWhenExpanded}>
+      <div style={showWhenExpanded} className="togglableContent">
         <div>{blog.title} {blog.author} <button onClick={toggleExpanded}>hide</button></div>
         <div><a href={blog.url}>{blog.url}</a></div>
         <div>likes {blog.likes}<button value={blog.id} onClick={handleLikeClick}>like</button></div>
@@ -63,11 +61,11 @@ const Blog = ({ blog, user, likeBlog, removeBlog }) => {
   )
 }
 
-Blog.propTypes = {
+/* Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
   likeBlog: PropTypes.func.isRequired,
   removeBlog: PropTypes.func.isRequired,
-}
+} */
 
 export default Blog
